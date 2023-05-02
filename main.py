@@ -7,28 +7,30 @@ fake = Faker()
 conn = sqlite3.connect('sample.db')
 cursor = conn.cursor()
 
-def check_query(q: str) -> bool:
-    q = q.upper()
-    if q.startswith('SELECT'):
-        return True
-    else:
-        return False
+def query_checker(func):
+    def wrapper(q):
+        q = q.upper()
+        if q.startswith('SELECT'):
+            return func(q)
+        else:
+            print("You can't add edit & new data to database")
+    return wrapper
 
-def runsqlquery(q):
-    if check_query(q):
-        try:
-            df = pd.read_sql_query(q, conn)
-            st.write(df)
-        except Exception as e:
-            raise e
 
-    else:
-        st.text("You can't add edit & new data to database")
+@query_checker
+def run_sql_query(q):
+    try:
+        df = pd.read_sql_query(q, conn)
+        st.write(df)
+    except Exception as e:
+        raise e
+
 
 def query():
     q = str(st.text_area("WRITE YOUR SQL CODE HERE"))
     if st.button("RUN SQL CODE"):
-        runsqlquery(q)
+        run_sql_query(q)
+
 
 if __name__ == "__main__":
     query()
