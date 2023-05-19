@@ -13,7 +13,7 @@ def query_checker(func):
         if q.startswith('SELECT'):
             return func(q)
         else:
-            st.error("You can't add edit & new data to database")
+            st.error("You can't add edit & add data to database")
     return wrapper
 
 
